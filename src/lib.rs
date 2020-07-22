@@ -458,6 +458,7 @@ impl<T> Async<T> {
     /// # std::io::Result::Ok(()) });
     /// ```
     pub async fn read_with<R>(&self, op: impl FnMut(&T) -> io::Result<R>) -> io::Result<R> {
+        self.source.readable().await?;
         let mut op = op;
         future::poll_fn(|cx| {
             match op(self.get_ref()) {
@@ -496,6 +497,7 @@ impl<T> Async<T> {
         &mut self,
         op: impl FnMut(&mut T) -> io::Result<R>,
     ) -> io::Result<R> {
+        self.source.readable().await?;
         let mut op = op;
         future::poll_fn(|cx| {
             match op(self.get_mut()) {
@@ -532,6 +534,7 @@ impl<T> Async<T> {
     /// # std::io::Result::Ok(()) });
     /// ```
     pub async fn write_with<R>(&self, op: impl FnMut(&T) -> io::Result<R>) -> io::Result<R> {
+        self.source.writable().await?;
         let mut op = op;
         future::poll_fn(|cx| {
             match op(self.get_ref()) {
@@ -571,6 +574,7 @@ impl<T> Async<T> {
         &mut self,
         op: impl FnMut(&mut T) -> io::Result<R>,
     ) -> io::Result<R> {
+        self.source.writable().await?;
         let mut op = op;
         future::poll_fn(|cx| {
             match op(self.get_mut()) {
